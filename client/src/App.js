@@ -14,7 +14,8 @@ import {
   Image,
   Menu,
 } from 'semantic-ui-react';
-
+import bart from './bart.png'
+import axios from 'axios'; 
 
 let defaultStyle = {
   color: '#FECE1E',
@@ -26,7 +27,7 @@ let fakeServerData = {
       playlists: [
         {
         name:'My Jams',
-        tracks:[
+        songs:[
           {name:'Baby', duration:1420},
           {name:'I want it that way', duration:1312},
           {name:'Lime and the coconut', duration:1720}
@@ -47,21 +48,21 @@ class PlaylistCounter extends Component {
   }
 }
 
-// class HoursCounter extends Component {
-//   render(){
-//     let allSongs = this.props.playlists.reduce((tracks, eachPlaylist) => {
-//       return tracks.concat(eachPlaylist.tracks)
-//     }, [])
-//     let totalDuration = allSongs.reduce((sum, eachSong) => {
-//       return sum + eachSong.duration
-//     }, 0)
-//     return(
-//       <div style={{...defaultStyle, width: "40%", display: 'inline=block'}}>
-//         <h2>{Math.round(totalDuration/60)} hours</h2>
-//       </div>
-//       ); 
-//       }
-// }
+class HoursCounter extends Component {
+  render(){
+    let allSongs = this.props.playlists.reduce((songs, eachPlaylist) => {
+      return songs.concat(eachPlaylist.songs)
+    }, [])
+    let totalDuration = allSongs.reduce((sum, eachSong) => {
+      return sum + eachSong.duration
+    }, 0)
+    return(
+      <div style={{...defaultStyle, width: "40%", display: 'inline=block'}}>
+        <h2>{Math.round(totalDuration/60)} hours</h2>
+      </div>
+      ); 
+      }
+}
   class Filter extends Component { 
     render() {
       return (
@@ -82,9 +83,9 @@ class Playlist extends Component {
         <Image src={playlist.imageUrl} style={{width: '160px'}}/>
         <h3>{playlist.name}</h3>
         <ul>
-          {/* {playlist.songs.map(song =>
+          {playlist.songs.map(song =>
             <li>{song.name}</li>
-            )} */}
+            )}
         </ul>
       </div>
     )
@@ -104,7 +105,7 @@ class App extends Component {
     let accessToken = parsed.access_token;
     if (!accessToken)
       return; 
-    fetch('https://api.spotify.com/v1/me', {
+    axios.get('https://api.spotify.com/v1/me', {
       headers: {'Authorization': 'Bearer ' + accessToken}
       }).then(response => response.json())
       .then(data => this.setState({
@@ -122,7 +123,7 @@ class App extends Component {
         return{
           name: item.name,
           imageUrl: item.images[0].url, 
-          tracks: item.tracks
+          songs: item.songs
             }
             })
         }))
@@ -140,7 +141,7 @@ class App extends Component {
        {this.state.user ?
         <div>
           <h1 style={{...defaultStyle, 'fontSize': '54px'}}>
-            {this.state.user.name}'s Playlists
+           <Image src={bart} width="100px"/> {this.state.user.name}'s Playlists
           </h1>
           <PlaylistCounter playlists={playlistToRender}/>
           {/* <HoursCounter playlists={this.state.playlists}/> */}
