@@ -97,38 +97,64 @@ class App extends Component {
     super(); 
     this.state = {
       serverData: {},
-      filterString: '' 
+      filterString: '',
+      user: {},
     }
   }
-  componentDidMount(){
-    let parsed = queryString.parse(window.location.search);
-    let accessToken = parsed.access_token;
-    if (!accessToken)
-      return; 
-    axios.get('https://api.spotify.com/v1/me', {
-      headers: {'Authorization': 'Bearer ' + accessToken}
-      }).then(response => response.json())
-      .then(data => this.setState({
-        user: {
-          name: data.display_name
+
+  componentDidMount() {
+    const BASE_URL = 'https://api.spotify.com/v1/me'
+    const PLAYLIST_URL = 'https://api.spotify.com/v1/me/playlists'
+      let parsed = queryString.parse(window.location.search);
+      let accessToken = parsed.access_token; 
+      if ( !accessToken)
+        return;
+      axios.get(BASE_URL,{headers:{'Authorization': 'Bearer ' + accessToken}
+      }).then(response => console.log(response.data))
+        .then(response => this.setState({ user: response.data
+          
+        })
+        )
+
+         axios.get(PLAYLIST_URL,{headers:{'Authorization': 'Bearer ' + accessToken}
+      }).then(response => console.log(response))
+        .then(data => this.setState( state => {
+          user: {
+            return {playlists: [...state.serverData]}
+
           }
-        }))
-
-    fetch('https://api.spotify.com/v1/me/playlists', {
-      headers: {'Authorization': 'Bearer ' + accessToken}
-      }).then(response => response.json())
-      .then(data => this.setState({
-        playlists: data.items.map(item => {
-          console.log(data.items)
-        return{
-          name: item.name,
-          imageUrl: item.images[0].url, 
-          songs: item.songs
-            }
-            })
-        }))
-
+        })
+        )
+        // axios.get(PLAYLIST_URL,{headers:{'Authorization': 'Bearer' + accessToken}
+        // }).then(response => console.log(response))
+        //   .then(data => this.setState(state => {
+        //     playlists: data.items.map(item =>{
+        //       console.log(data.items)
+        //       return{
+        //         name: item.name,
+        //         imageUrl:item.images[0].url,
+        //         songs:[]
+        //       }
+        //     })
+        //   }))
   }
+
+
+  //   fetch('https://api.spotify.com/v1/me/playlists', {
+  //     headers: {'Authorization': 'Bearer ' + accessToken}
+  //     }).then(response => response.json())
+  //     .then(data => this.setState({
+  //       playlists: data.items.map(item => {
+  //         console.log(data.items)
+  //       return{
+  //         name: item.name,
+  //         imageUrl: item.images[0].url, 
+  //         songs: item.songs
+  //           }
+  //           })
+  //       }))
+
+  // }
   render() { 
     let playlistToRender = 
     this.state.user && this.state.playlists 
