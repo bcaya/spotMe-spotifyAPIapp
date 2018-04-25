@@ -44,31 +44,28 @@ class App extends Component {
     let parsed = queryString.parse(window.location.search);
     let accessToken = parsed.access_token;
 
-    fetch('https://api.spotify.com/v1/me', {
+    axios.get('https://api.spotify.com/v1/me', {
       headers: {'Authorization': 'Bearer ' + accessToken}
-      }).then((response) => response.json())
-      .then(data => this.setState({
+      }).then(data => this.setState({
         user: {
-          name: data.id
+          name: data.data.id
           }
         }))
 
-    fetch('https://api.spotify.com/v1/me/playlists', {
+    axios.get('https://api.spotify.com/v1/me/playlists', {
       headers: {'Authorization': 'Bearer ' + accessToken}
-      }).then((response) => response.json())
-      .then(playlistData => {
-       let playlists = playlistData.items
+      }).then(playlistData => {
+       let playlists = playlistData.data.items
        let trackDataPromise = playlists.map(playlist => {
-        let responsePromise = fetch(playlist.tracks.href, {
+        let responsePromise = axios.get(playlist.tracks.href, {
             headers: {'Authorization': 'Bearer ' + accessToken}
            })
            let trackDataPromise = responsePromise 
-            .then(response => response.json())
           return trackDataPromise;
         })
        return Promise.all(trackDataPromise).then(trackDatas => {
           trackDatas.forEach((trackData, i) => {
-            playlists[i].trackDatas = trackData.items
+            playlists[i].trackDatas = trackData.data.items
             .map(item => item.track)
             .map(trackData => ({
               name: trackData.name, 
