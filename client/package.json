@@ -10,7 +10,8 @@
     "react-dom": "^16.3.0",
     "react-foundation": "^0.9.4",
     "react-scripts": "1.1.1",
-    "semantic-ui-css": "^2.3.1"
+    "semantic-ui-css": "^2.3.1",
+    "semantic-ui-react": "^0.79.1"
   },
   "scripts": {
     "start": "react-scripts start",
